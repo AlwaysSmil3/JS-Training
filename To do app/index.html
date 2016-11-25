@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Note quannm</title>
+</head>
+<body>
+    <div id="content-add-note">
+        <input id="title-note" name="title-note" type="text" placeholder="title note">
+        <button id="button-add-note" type="button">Add Note</button>
+    </div>
+
+    <div id="content-display-note">
+
+    </div>
+</body>
+</html>
+
+<script>
+    document.getElementById('button-add-note').onclick = function () {
+
+        var title = document.getElementById('title-note').value;
+        //alert(title);
+        var html = '<p>' + title + '</p>';
+        html += '<input name="title-note" value="' + title + '" placeholder="title note" >'
+        document.getElementById('content-display-note').innerHTML += html;
+    }
+</script>
