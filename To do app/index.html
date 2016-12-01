@@ -1,4 +1,28 @@
 <!DOCTYPE html>
+<style>
+    li {
+        display: inline-block;
+        width: 23%;
+        border: solid 1px;
+        margin: 10px 1%;
+        padding: 10px;
+        text-align: center;
+    }
+
+    li button {
+        margin: 0 10px;
+    }
+
+    li.complete {
+        background: greenyellow;
+    }
+
+    div#content-add-note {
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,19 +34,92 @@
         <button id="button-add-note" type="button">Add Note</button>
     </div>
 
-    <div id="content-display-note">
+    <div>
+        <ul id="content-display-note" class="listnote">
 
+        </ul>
     </div>
 </body>
 </html>
 
 <script>
-    document.getElementById('button-add-note').onclick = function () {
 
-        var title = document.getElementById('title-note').value;
-        //alert(title);
-        var html = '<p>' + title + '</p>';
-        html += '<input name="title-note" value="' + title + '" placeholder="title note" >'
-        document.getElementById('content-display-note').innerHTML += html;
+    function Note() {
+        this.list = [];
     }
+
+    Note.prototype.get = function() {
+        return this.list;
+    };
+
+    Note.prototype.add = function(note) {
+        this.list.push(note);
+    };
+
+    Note.prototype.count = function () {
+        return this.list.length;
+    };
+
+    Note.prototype.delete = function(id) {
+        for (var i = 0; i < this.list.length; i++) {
+            if(this.list[i].id == id) {
+                this.list.splice(i, 1);
+            }
+        }
+    };
+
+    Note.prototype.changestatus = function(id) {
+        for (var i = 0; i < this.list.length; i++) {
+            if(this.list[i].id == id) {
+                this.list[i].status = (this.list[i].status - 1) * (-1);
+            }
+        }
+    };
+
+    Note.prototype.notelast = function() {
+        if(this.list.length == 0) {
+            return 0;
+        }
+        return this.list[this.list.length-1].id;
+    }
+
+    var note = new Note();
+
+    document.getElementById('button-add-note').onclick = function () {
+        var title = document.getElementById('title-note').value;
+        if (title != '') {
+            note.add({id: (note.notelast() + 1), title: title, status: 0});
+            loadNote();
+        } else {
+            alert('Input Note Title');
+        }
+    };
+
+    document.getElementsByClassName('listnote')[0].addEventListener('click', function(e) {
+        e = e || window.event;
+        var target = e.target;
+        var noteid = target.getAttribute('data-id');
+
+        var taskName = target.getAttribute('name');
+        if(taskName == 'deleteNote') {
+            note.delete(noteid);
+            loadNote();
+        }
+        if(taskName == 'changeStatus') {
+            note.changestatus(noteid);
+            loadNote();
+        }
+    }, false);
+
+    var loadNote = function() {
+        var html = '';
+        for (var i = note.count(); i > 0; i--) {
+            var styleNote = note.get()[i-1].status == 1 ? 'class ="complete"' : '';
+            html += '<li ' + styleNote + '><p>' + note.get()[i - 1].title + '</p>';
+            html += '<button data-id="' + note.get()[i - 1].id + '" type="button" name="deleteNote" >Delete</button>';
+            html += '<button data-id="' + note.get()[i - 1].id + '" data-status="' + note.get()[i - 1].status + '" type="button" name="changeStatus">Change Status</button></div></li>';
+        }
+        document.getElementById('content-display-note').innerHTML = html;
+    }
+    
 </script>
